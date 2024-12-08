@@ -3,16 +3,16 @@ kind: ReplicaSet
 metadata:
   name: nginx-replicaset
   labels:
-    app: nginx
+    app: nginxrs
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: nginx
+      app: nginxrs
   template:
     metadata:
       labels:
-        app: nginx
+        app: nginxrs
     spec:
       containers:
       - name: nginx
@@ -26,7 +26,7 @@ metadata:
   name: nginx-service
 spec:
   selector:
-    app: nginx
+    app: nginxrs
   ports:
     - protocol: TCP
       port: 80
