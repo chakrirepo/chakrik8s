@@ -3,46 +3,52 @@ kind: StatefulSet
 metadata:
   name: nginx-statefulset
   namespace: chakri-ns
-  labels:
-    app: nginxsf
 spec:
-  serviceName: nginx-service
-  replicas: 2
   selector:
     matchLabels:
-      app: nginxsf
+      app: nginxtwo
+  serviceName: nginx-servicetwo
+  replicas: 3
   template:
     metadata:
       labels:
-        app: nginxsf
+        app: nginxtwo
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
-      - name: nginx
-        image: nginx:latest
+      - name: nginx-container
+        image: nginx
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
         volumeMounts:
-        - name: nginx-data
-          mountPath: /usr/share/nginx/html
+        - name: nginx-config-volume
+          mountPath: /etc/nginx/conf.d
   volumeClaimTemplates:
   - metadata:
-      name: nginx-data
+      name: nginx-config-volume
     spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: 1Gi
+          storage: 512Mi
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-service
+  name: nginx-servicetwo
+  namespace: chakri-ns
 spec:
+  clusterIP: None
   selector:
-    app: nginxsf
+    app: nginxtwo
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: NodePort
+  - port: 80
+    targetPort: 80
 
